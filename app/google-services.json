@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "736023584111",
+    "firebase_url": "https://simplepomodorotimer.firebaseio.com",
+    "project_id": "simplepomodorotimer",
+    "storage_bucket": "simplepomodorotimer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:736023584111:android:81f08f6e748b9403",
+        "android_client_info": {
+          "package_name": "com.devlanding.simplepomodoro.simplepromodorotimer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "736023584111-he3quo6oqvrim0p6l73qpj8nab1peodp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOQJ_6bAhOg_wecOYw43SabL0WS23aJoQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
