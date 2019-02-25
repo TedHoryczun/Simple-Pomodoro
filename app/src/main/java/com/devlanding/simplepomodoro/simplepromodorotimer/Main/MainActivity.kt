@@ -12,30 +12,25 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import com.devlanding.simplepomodoro.simplepromodorotimer.MainModule
 import com.devlanding.simplepomodoro.simplepromodorotimer.R
 import com.devlanding.simplepomodoro.simplepromodorotimer.TimerFragment.TimerFragment
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.pawegio.kandroid.fromApi
 import com.pawegio.kandroid.notificationManager
 import kotlinx.android.synthetic.main.activity_main.*
-
-
-
+import org.koin.android.ext.android.inject
+import org.koin.android.ext.android.startKoin
 
 
 class MainActivity : AppCompatActivity(), MainMVP.view {
 
-    val groupId = "alarm"
-    val alarmName = "Alarm"
-    val time = "time"
-    val workChannelId = "work"
-    val presenter by lazy{MainPresenter(this, applicationContext)}
-    @SuppressLint("NewApi")
+    val presenter: MainMVP.presenter by inject()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        startKoin(this, listOf(MainModule(this, this).mod))
         setContentView(R.layout.activity_main)
         FirebaseAnalytics.getInstance(this)
-        presenter.initApprate()
 
 
         var fragment = TimerFragment.newInstance(true, "")
@@ -47,18 +42,7 @@ class MainActivity : AppCompatActivity(), MainMVP.view {
         }
         supportFragmentManager.beginTransaction().replace(R.id.container, fragment).commit()
         setSupportActionBar(toolbar)
-        fromApi(26) {
-            val alarmChannel = NotificationChannel(groupId, alarmName, NotificationManager.IMPORTANCE_HIGH)
-            val audioAttributes = AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
-                    .build()
-            alarmChannel.setSound(Uri.parse("android.resource://" + packageName + "/" + R.raw.impressed), audioAttributes)
-            alarmChannel.enableVibration(true)
-            alarmChannel.vibrationPattern = longArrayOf(500, 500, 500, 200, 200, 200, 200, 200, 200)
-            notificationManager!!.createNotificationChannel(NotificationChannel(groupId, alarmName, NotificationManager.IMPORTANCE_HIGH))
-            notificationManager!!.createNotificationChannel(NotificationChannel("ongoingTime", time, NotificationManager.IMPORTANCE_LOW))
-        }
+        presenter.createNotificationChannels()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

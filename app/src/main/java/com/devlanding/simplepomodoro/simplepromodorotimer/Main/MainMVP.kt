@@ -6,6 +6,8 @@ package com.devlanding.simplepomodoro.simplepromodorotimer.Main
 
 interface MainMVP{
     interface view{}
-    interface presenter{}
+    interface presenter{
+        fun createNotificationChannels()
+    }
     interface interactor{}
 }

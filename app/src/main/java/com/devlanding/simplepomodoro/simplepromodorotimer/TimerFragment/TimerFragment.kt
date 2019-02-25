@@ -9,10 +9,6 @@ import android.view.ViewGroup
 import com.devlanding.simplepomodoro.simplepromodorotimer.PomodoroTimer.PomodoTimer
 import com.devlanding.simplepomodoro.simplepromodorotimer.PomodoroTimer.TimeUnitWatch
 import com.devlanding.simplepomodoro.simplepromodorotimer.R
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.InterstitialAd
-import com.google.android.gms.ads.MobileAds
 import com.ldoublem.ringPregressLibrary.Ring
 import hotchemi.android.rate.AppRate
 import kotlinx.android.synthetic.main.fragment_timer.*
@@ -50,7 +46,6 @@ class TimerFragment : Fragment(), TimerMvp.view {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adView.loadAd(AdRequest.Builder().build())
         presenter.displayPomodoroAmount()
         presenter.startWork(context)
         if (!shouldGoToWork!!) {
@@ -67,17 +62,6 @@ class TimerFragment : Fragment(), TimerMvp.view {
     }
 
     override fun showInterstelerAd() {
-
-        MobileAds.initialize(context, "ca-app-pub-4332428216932927/8106748982")
-        val ad = InterstitialAd(context)
-        ad.adUnitId = "ca-app-pub-4332428216932927/8106748982"
-        ad.loadAd(AdRequest.Builder().build())
-        ad.adListener = object : AdListener() {
-            override fun onAdLoaded() {
-                super.onAdLoaded()
-                ad.show()
-            }
-        }
     }
 
     override fun displayPopupIsPomodoroValid() {
