@@ -8,6 +8,9 @@ interface MainMVP{
     interface view{}
     interface presenter{
         fun createNotificationChannels()
+        fun rateApp()
+        fun reportBug()
+        abstract fun showtimerFragment(shouldStartTimer: Boolean)
     }
     interface interactor{}
 }
