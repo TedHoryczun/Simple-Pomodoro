@@ -10,7 +10,7 @@ import com.devlanding.simplepomodoro.simplepromodorotimer.R
 import com.devlanding.simplepomodoro.simplepromodorotimer.TimerFragment.TimerFragment
 
 
-class MainNavigator(val context: MainActivity) {
+class MainNavigator(val context: Context) {
     fun goToRateApp() = with(context) {
         val uri = Uri.parse("market://details?id=" + packageName)
         val goToMarket = Intent(ACTION_VIEW, uri)
@@ -36,8 +36,6 @@ class MainNavigator(val context: MainActivity) {
     }
 
     fun showTimerFragment(shouldStartTimer: Boolean) = with(context) {
-        val fragment = TimerFragment.newInstance(shouldStartTimer, "")
-        supportFragmentManager.beginTransaction().replace(R.id.container, fragment).commit()
     }
 
 }

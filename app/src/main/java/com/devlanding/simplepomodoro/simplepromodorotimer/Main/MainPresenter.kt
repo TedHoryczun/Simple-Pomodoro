@@ -9,6 +9,7 @@ import com.devlanding.simplepomodoro.simplepromodorotimer.EasyNotificationManage
 class MainPresenter(val view: MainMVP.view, val appRate: AppRate, val notificationManager: EasyNotificationManager, val navigator: MainNavigator) : MainMVP.presenter {
     override fun showtimerFragment(shouldStartTimer: Boolean) {
         navigator.showTimerFragment(shouldStartTimer)
+        view.showTimerFragment(shouldStartTimer)
     }
 
     override fun createNotificationChannels() {

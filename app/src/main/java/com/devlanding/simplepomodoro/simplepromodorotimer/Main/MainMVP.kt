@@ -5,7 +5,9 @@ package com.devlanding.simplepomodoro.simplepromodorotimer.Main
  */
 
 interface MainMVP{
-    interface view{}
+    interface view{
+        fun showTimerFragment(shouldStartTimer: Boolean)
+    }
     interface presenter{
         fun createNotificationChannels()
         fun rateApp()

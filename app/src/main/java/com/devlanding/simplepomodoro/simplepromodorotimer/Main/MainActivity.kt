@@ -6,9 +6,12 @@ import android.view.Menu
 import android.view.MenuItem
 import com.devlanding.simplepomodoro.simplepromodorotimer.R
 import com.devlanding.simplepomodoro.simplepromodorotimer.TimerFragment.TimerFragment
+import com.devlanding.simplepomodoro.simplepromodorotimer.TimerFragment.TimerModule
 import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.android.ext.android.getKoin
 import org.koin.android.ext.android.inject
+import org.koin.android.ext.android.releaseContext
 import org.koin.android.ext.android.startKoin
 
 
@@ -17,7 +20,7 @@ class MainActivity : AppCompatActivity(), MainMVP.view {
     val presenter: MainMVP.presenter by inject()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        startKoin(this, listOf(MainModule(this, this).mod))
+        startKoin(baseContext, listOf(MainModule(this).mod, TimerModule().mod))
         setContentView(R.layout.activity_main)
         FirebaseAnalytics.getInstance(this)
 
@@ -31,6 +34,11 @@ class MainActivity : AppCompatActivity(), MainMVP.view {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
         return true
+    }
+
+    override fun showTimerFragment(shouldStartTimer: Boolean) {
+        val fragment = TimerFragment.newInstance(shouldStartTimer, "")
+        supportFragmentManager.beginTransaction().replace(R.id.container, fragment).commit()
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {

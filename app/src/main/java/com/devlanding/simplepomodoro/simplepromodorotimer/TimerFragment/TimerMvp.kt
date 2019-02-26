@@ -2,6 +2,8 @@ package com.devlanding.simplepomodoro.simplepromodorotimer.TimerFragment
 
 import android.content.Context
 import android.media.Ringtone
+import com.devlanding.simplepomodoro.simplepromodorotimer.PomodoroTimer.PomodoTimer
+import com.devlanding.simplepomodoro.simplepromodorotimer.PomodoroTimer.TimeUnitWatch
 import com.ldoublem.ringPregressLibrary.Ring
 
 interface TimerMvp{
@@ -20,9 +22,21 @@ interface TimerMvp{
 
     }
     interface presenter{
-        fun stopWorkingOrBreak(context: Context)
+
+        fun stopWorkingOrBreak()
         fun addSuccessfulPomodoro()
-        fun playEndOfPomodoroRingtone(context: Context?)
+        fun playEndOfPomodoroRingtone()
+        fun displayPomodoroAmount()
+        fun startWork()
+        fun toggleBreakWorkIfTimerIsOver()
+        fun timeShouldBeZeroIfTimerIsDone()
+        fun startLongorShortBreak()
+        fun formatTimeToDoubleDigits(time: TimeUnitWatch)
+        fun updateWorkProgressBarStyle(percentage: Int, working: Boolean)
+        fun determineIfBreakOrWorkHasEnded(toString: String)
+        fun setTimer(timer: PomodoTimer)
+        fun setIstimerRunning(isTimerRunning: Boolean)
+        fun setWorkIsDone()
 
     }
     interface interactor{

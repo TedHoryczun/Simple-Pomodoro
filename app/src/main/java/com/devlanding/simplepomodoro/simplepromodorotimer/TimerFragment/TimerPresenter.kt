@@ -9,64 +9,74 @@ import com.devlanding.simplepomodoro.simplepromodorotimer.WorkTracker
 import org.greenrobot.eventbus.EventBus
 import java.text.DecimalFormat
 
-class TimerPresenter(val view: TimerMvp.view, context: Context) : TimerMvp.presenter {
+class TimerPresenter(val view: TimerMvp.view, val interactor: TimerInteractor, val analytics: Analytics) : TimerMvp.presenter {
 
-    val interactor = TimerInteractor(context)
     val workTracker = WorkTracker()
     var currentTimer: PomodoTimer? = null
-    val analytics = Analytics(context)
 
-    fun startWork(context: Context) {
-        val workProgressStyle = interactor.getWorkProgressBarStyle(context)
+    override fun setTimer(timer: PomodoTimer) {
+        currentTimer = timer
+    }
+
+    override fun setWorkIsDone() {
+        workTracker.workIsDone()
+    }
+
+    override fun setIstimerRunning(isTimerRunning: Boolean) {
+        workTracker.isTimerRunnig = isTimerRunning
+    }
+
+    override fun startWork() {
+        val workProgressStyle = interactor.getWorkProgressBarStyle()
         view.displayProgressBarChanges(workProgressStyle, R.color.WorkColorShadow)
         view.setTopOfProgressMessage("Time Until Break")
         workTracker.resetWorkingAndBreak()
     }
 
-    fun startBreak(context: Context) {
+    fun startBreak() {
 
-        val breakProgressStyle = interactor.getBreakProgressBarStyle(context)
+        val breakProgressStyle = interactor.getBreakProgressBarStyle()
         view.displayProgressBarChanges(breakProgressStyle, R.color.BreakColorShadow)
         view.setTopOfProgressMessage("Break")
         workTracker.resetWorkingAndBreak()
     }
 
-    fun startWorkTimer(context: Context?) {
-        interactor.startWorkTimer(context!!)
-        startWork(context)
+    fun startWorkTimer() {
+        interactor.startWorkTimer()
+        startWork()
         workTracker.timerIsRunning()
         analytics.log(analytics.START_POMODORO)
     }
 
-    fun startShortBreakTimer(context: Context) {
-        interactor.startBreakTimer(context, 5)
-        startBreak(context)
+    fun startShortBreakTimer() {
+        interactor.startBreakTimer(5)
+        startBreak()
         analytics.log(analytics.BREAK)
     }
 
-    fun startLongBreakTimer(context: Context) {
-        interactor.startBreakTimer(context, 15)
-        startBreak(context)
+    fun startLongBreakTimer() {
+        interactor.startBreakTimer(15)
+        startBreak()
         analytics.log(analytics.LONG_BREAK)
     }
 
-    fun formatTimeToDoubleDigits(time: TimeUnitWatch) {
+    override fun formatTimeToDoubleDigits(time: TimeUnitWatch) {
         val formatter = DecimalFormat("00")
         val minutes = formatter.format(time.minute)
         val seconds = formatter.format(time.second)
         view.setTime(minutes, seconds)
     }
 
-    fun updateWorkProgressBarStyle(context: Context, percentage: Int, working: Boolean) {
+    override fun updateWorkProgressBarStyle(percentage: Int, working: Boolean) {
         val progressStyle = if (working) {
-            interactor.updateWorkProgressBarStyle(context, percentage)
+            interactor.updateWorkProgressBarStyle(percentage)
         } else {
-            interactor.updateBreakProgressBarStyle(context, percentage)
+            interactor.updateBreakProgressBarStyle(percentage)
         }
         view.updateProgressBarPercentage(progressStyle)
     }
 
-    fun determineIfBreakOrWorkHasEnded(code: String) {
+    override fun determineIfBreakOrWorkHasEnded(code: String) {
         workTracker.determineIfBreakOrWorkHasEnded(code)
     }
 
@@ -77,9 +87,9 @@ class TimerPresenter(val view: TimerMvp.view, context: Context) : TimerMvp.prese
         displayPomodoroAmount()
     }
 
-    fun toggleBreakWorkIfTimerIsOver(context: Context) {
+    override fun toggleBreakWorkIfTimerIsOver() {
         if (workTracker.breakDone) {
-            startWorkTimer(context)
+            startWorkTimer()
         } else if (workTracker.workDone) {
             view.displayPopupIsPomodoroValid()
 
@@ -87,41 +97,41 @@ class TimerPresenter(val view: TimerMvp.view, context: Context) : TimerMvp.prese
             if (workTracker.isTimerRunnig) {
                 view.displayPopupToStopTimer()
             } else {
-                startWorkTimer(context)
+                startWorkTimer()
             }
         }
     }
 
-    fun startLongorShortBreak(context: Context) {
+    override fun startLongorShortBreak() {
         val numOfPomodoro = interactor.settings.getNumOfPomodoro()
         if (numOfPomodoro % 4 == 0 && numOfPomodoro != 0) {
-            startLongBreakTimer(context)
+            startLongBreakTimer()
         } else {
-            startShortBreakTimer(context)
+            startShortBreakTimer()
         }
         view.showInterstelerAd()
         view.rateApp()
     }
 
-    fun displayPomodoroAmount() {
+    override fun displayPomodoroAmount() {
         val pomodoroAmount = interactor.settings.getNumOfPomodoro()
         view.displayPomodoroAmount(pomodoroAmount)
     }
 
-    override fun stopWorkingOrBreak(context: Context) {
+    override fun stopWorkingOrBreak() {
         currentTimer?.onFinish()
         currentTimer?.cancel()
         EventBus.getDefault().post(1)
-        interactor.cancelAlarm(context)
+        interactor.cancelAlarm()
         workTracker.setTimerNotRunning()
-        startWork(context)
+        startWork()
     }
 
-    fun timeShouldBeZeroIfTimerIsDone(context: Context) {
+    override fun timeShouldBeZeroIfTimerIsDone() {
         if (currentTimer != null) {
             if (currentTimer?.isTimerDone()!!) {
                 workTracker.setTimerNotRunning()
-                stopWorkingOrBreak(context)
+                stopWorkingOrBreak()
                 if (currentTimer!!.isWorking) {
                     determineIfBreakOrWorkHasEnded("WorkDone")
                 } else {
@@ -132,8 +142,8 @@ class TimerPresenter(val view: TimerMvp.view, context: Context) : TimerMvp.prese
         }
     }
 
-    override fun playEndOfPomodoroRingtone(context: Context?) {
-        val ringtone = interactor.getEndOfPomodoroRingtone(context)
+    override fun playEndOfPomodoroRingtone() {
+        val ringtone = interactor.getEndOfPomodoroRingtone()
         view.playSound(ringtone)
     }
 }

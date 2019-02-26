@@ -15,14 +15,14 @@ import com.ldoublem.ringPregressLibrary.Ring
 import com.pawegio.kandroid.alarmManager
 import java.util.concurrent.TimeUnit
 
-class TimerInteractor(context: Context) : TimerMvp.interactor {
+class TimerInteractor(val context: Context) : TimerMvp.interactor {
     val SHORT_BREAK_DURATION = 5
     val LONG_BREAK_DURATION = 15
     val WORK_DURATION = 25
     val settings = SettingsHelper(context)
     var currentAlarmIntent: Intent? = null
 
-    fun getWorkProgressBarStyle(context: Context): MutableList<Ring> {
+    fun getWorkProgressBarStyle(): MutableList<Ring> {
         val workColor = context.resources.getColor(R.color.pomodoroWorkColor)
         val r = Ring(100, "", "", workColor, workColor)
         val mlistRing = mutableListOf<Ring>()
@@ -30,7 +30,7 @@ class TimerInteractor(context: Context) : TimerMvp.interactor {
         return mlistRing
     }
 
-    fun updateWorkProgressBarStyle(context: Context, percentProgress: Int): MutableList<Ring> {
+    fun updateWorkProgressBarStyle(percentProgress: Int): MutableList<Ring> {
         val workColor = context.resources.getColor(R.color.pomodoroWorkColor)
         val r = Ring(percentProgress, "", "", workColor, workColor)
         val mlistRing = mutableListOf<Ring>()
@@ -38,7 +38,7 @@ class TimerInteractor(context: Context) : TimerMvp.interactor {
         return mlistRing
     }
 
-    fun getBreakProgressBarStyle(context: Context): MutableList<Ring> {
+    fun getBreakProgressBarStyle(): MutableList<Ring> {
         val breakColor = context.resources.getColor(R.color.pomodoroBreakColor)
         val r = Ring(100, "", "", breakColor, breakColor)
         val mlistRing = mutableListOf<Ring>()
@@ -46,7 +46,7 @@ class TimerInteractor(context: Context) : TimerMvp.interactor {
         return mlistRing
     }
 
-    fun updateBreakProgressBarStyle(context: Context, percentage: Int): MutableList<Ring> {
+    fun updateBreakProgressBarStyle(percentage: Int): MutableList<Ring> {
         val breakColor = context.resources.getColor(R.color.pomodoroBreakColor)
         val r = Ring(percentage, "", "", breakColor, breakColor)
         val mlistRing = mutableListOf<Ring>()
@@ -54,8 +54,8 @@ class TimerInteractor(context: Context) : TimerMvp.interactor {
         return mlistRing
     }
 
-    fun startBreakTimer(context: Context, minutesBreakTime: Int) {
-        cancelAlarm(context)
+    fun startBreakTimer(minutesBreakTime: Int) {
+        cancelAlarm()
         currentAlarmIntent = if (minutesBreakTime == SHORT_BREAK_DURATION) {
             Intent(context, BreakAlarmNotificationReceiver::class.java)
         } else if (minutesBreakTime == LONG_BREAK_DURATION) {
@@ -68,22 +68,22 @@ class TimerInteractor(context: Context) : TimerMvp.interactor {
         context.alarmManager?.set(AlarmManager.RTC_WAKEUP, timeLength, pendingIntent)
     }
 
-    fun startWorkTimer(context: Context) {
-        cancelAlarm(context)
+    fun startWorkTimer() {
+        cancelAlarm()
         currentAlarmIntent = Intent(context, WorkAlarmNotificationReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(context, 0, currentAlarmIntent, 0)
         val minutes25 = TimeUnit.MINUTES.toMillis(WORK_DURATION.toLong())
         context.alarmManager?.set(AlarmManager.RTC_WAKEUP, minutes25, pendingIntent)
     }
 
-    fun cancelAlarm(context: Context) {
+    fun cancelAlarm() {
         if (currentAlarmIntent != null) {
             val pendingIntent = PendingIntent.getBroadcast(context, 0, currentAlarmIntent, 0)
             context.alarmManager?.cancel(pendingIntent)
         }
     }
 
-    fun getEndOfPomodoroRingtone(context: Context?): Ringtone? {
+    fun getEndOfPomodoroRingtone(): Ringtone? {
         val notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         return RingtoneManager.getRingtone(context, notification)
     }

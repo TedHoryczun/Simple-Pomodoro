@@ -17,6 +17,11 @@ import org.greenrobot.eventbus.Subscribe
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.yesButton
+import org.koin.android.ext.android.getKoin
+import org.koin.android.ext.android.inject
+import org.koin.android.ext.android.startKoin
+import org.koin.core.parameter.parametersOf
+import org.koin.dsl.module.applicationContext
 import java.util.concurrent.TimeUnit
 
 
@@ -24,7 +29,7 @@ class TimerFragment : Fragment(), TimerMvp.view {
 
     private var shouldGoToWork: Boolean? = null
     private var mParam2: String? = null
-    val presenter by lazy { TimerPresenter(this, context) }
+    val presenter: TimerMvp.presenter by inject{ parametersOf(this)}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +41,7 @@ class TimerFragment : Fragment(), TimerMvp.view {
 
     override fun onResume() {
         super.onResume()
-        presenter.timeShouldBeZeroIfTimerIsDone(context)
+        presenter.timeShouldBeZeroIfTimerIsDone()
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
@@ -47,16 +52,17 @@ class TimerFragment : Fragment(), TimerMvp.view {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         presenter.displayPomodoroAmount()
-        presenter.startWork(context)
+        presenter.startWork()
         if (!shouldGoToWork!!) {
             setTime("00", "00")
-            presenter.workTracker.workIsDone()
+            presenter.setWorkIsDone()
         }
         minute.setOnClickListener {
-            presenter.toggleBreakWorkIfTimerIsOver(context)
+            presenter.toggleBreakWorkIfTimerIsOver()
         }
 
     }
+
     override fun rateApp() {
         AppRate.showRateDialogIfMeetsConditions(activity);
     }
@@ -69,11 +75,11 @@ class TimerFragment : Fragment(), TimerMvp.view {
         activity.alert("Was your pomodoro uninterupted?") {
             yesButton {
                 presenter.addSuccessfulPomodoro()
-                presenter.startLongorShortBreak(context)
+                presenter.startLongorShortBreak()
 
             }
             noButton {
-                presenter.stopWorkingOrBreak(context)
+                presenter.stopWorkingOrBreak()
                 setTime("25", "00")
             }
         }.show()
@@ -82,7 +88,7 @@ class TimerFragment : Fragment(), TimerMvp.view {
     override fun displayPopupToStopTimer() {
         activity.alert("Cancel Pomodoro", "Are you sure you would like to cancel this pomodoro? All Progress will be lost.") {
             yesButton {
-                presenter.stopWorkingOrBreak(context)
+                presenter.stopWorkingOrBreak()
                 setTime("25", "00")
             }
             noButton {}
@@ -124,25 +130,25 @@ class TimerFragment : Fragment(), TimerMvp.view {
     @Subscribe
     fun setTime(time: TimeUnitWatch) {
         presenter.formatTimeToDoubleDigits(time)
-        presenter.workTracker.isTimerRunnig = true
+        presenter.setIstimerRunning(true)
         val percentage = if (TimeUnit.SECONDS.toMillis(time.currentMilli) == 0L) {
             ((time.currentMilli) * 100 / time.maxMilli).toInt()
 
         } else {
             ((time.currentMilli - TimeUnit.SECONDS.toMillis(1)) * 100 / time.maxMilli).toInt()
         }
-        presenter.updateWorkProgressBarStyle(context, percentage, time.isWorking)
+        presenter.updateWorkProgressBarStyle(percentage, time.isWorking)
     }
 
     @Subscribe
     fun endWorkOrBreak(code: java.lang.String) {
         presenter.determineIfBreakOrWorkHasEnded(code.toString())
-        presenter.playEndOfPomodoroRingtone(context)
+        presenter.playEndOfPomodoroRingtone()
     }
 
     @Subscribe
     fun saveTimer(timer: PomodoTimer) {
-        presenter.currentTimer = timer
+        presenter.setTimer(timer)
     }
 
     override fun playSound(ringtone: Ringtone?) {

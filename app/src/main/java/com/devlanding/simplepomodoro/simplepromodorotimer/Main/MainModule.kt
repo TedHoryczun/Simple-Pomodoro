@@ -1,16 +1,17 @@
 package com.devlanding.simplepomodoro.simplepromodorotimer.Main
 
 import com.devlanding.simplepomodoro.simplepromodorotimer.EasyNotificationManager
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module.module
 
 
-class MainModule(val activity: MainActivity, val view: MainMVP.view){
-    val mod = module {
-        single { EasyNotificationManager(activity.baseContext) }
-        single { AppRate(activity.baseContext) }
-        single { MainNavigator(activity) }
+class MainModule(val view: MainMVP.view){
+    val mod = module(override = true) {
+        factory { EasyNotificationManager(androidContext()) }
+        factory { AppRate(androidContext()) }
+        factory { MainNavigator(androidContext()) }
 
-        single<MainMVP.presenter> { MainPresenter(view, get(), get(), get()) }
+        factory<MainMVP.presenter> { MainPresenter(view, get(), get(), get()) }
     }
 
 }
