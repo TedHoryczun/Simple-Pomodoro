@@ -8,10 +8,6 @@ import java.util.concurrent.TimeUnit
 
 class BreakAlarmNotificationReceiver : BroadcastReceiver(){
     var context: Context? = null
-
-    val groupId = "alarm"
-    val alarmName = "Alarm"
-    val workChannelId = "work"
     override fun onReceive(context: Context?, intent: Intent?) {
         this.context = context
 //        val timer = PomodoTimer(TimeUnit.MINUTES.toMillis(5), false, context!!)

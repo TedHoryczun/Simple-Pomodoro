@@ -11,6 +11,7 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.os.IBinder
 import android.os.PowerManager
+import com.devlanding.simplepomodoro.simplepromodorotimer.AlarmConst.Companion.groupId
 import com.pawegio.kandroid.notificationManager
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -21,7 +22,6 @@ import com.devlanding.simplepomodoro.simplepromodorotimer.Main.MainActivity
 class StickyTimerNotification : Service(), StickyTimerMVP.view {
 
     var notification: Notification.Builder? = null
-    val groupId = "ongoingTime"
     var isWorking = false
     var presenter: StickTimerPresenter? = null
     var updateNotification = true
@@ -70,7 +70,7 @@ class StickyTimerNotification : Service(), StickyTimerMVP.view {
                 .setContentText(description)
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setVibrate(longArrayOf(500, 500, 500, 200, 200, 200, 200, 200, 200))
-                .setChannelId(groupId)
+                .setChannelId(AlarmConst.groupId)
                 .setAutoCancel(true)
                 .build()
         this.notificationManager!!.notify(1, notification)
@@ -100,7 +100,7 @@ class StickyTimerNotification : Service(), StickyTimerMVP.view {
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
                 .setContentIntent(pending)
-                .setChannelId(groupId)
+                .setChannelId(AlarmConst.groupId)
         startForeground(2, notification?.build())
         updateNotification = true
     }

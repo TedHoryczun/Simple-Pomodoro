@@ -6,15 +6,14 @@ import android.app.NotificationManager
 import android.content.Context
 import android.media.AudioAttributes
 import android.net.Uri
+import com.devlanding.simplepomodoro.simplepromodorotimer.AlarmConst.Companion.alarmName
+import com.devlanding.simplepomodoro.simplepromodorotimer.AlarmConst.Companion.groupId
 import com.pawegio.kandroid.fromApi
 import com.pawegio.kandroid.notificationManager
 
 
 class EasyNotificationManager(val context: Context) {
-    val groupId = "alarm"
-    val alarmName = "Alarm"
     val time = "time"
-    val workChannelId = "work"
 
     @SuppressLint("NewApi")
     fun createNotificationChannels() = with(context) {
