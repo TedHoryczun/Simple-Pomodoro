@@ -31,6 +31,10 @@ class MainActivity : AppCompatActivity(), MainMVP.view {
         setSupportActionBar(toolbar)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        getKoin().close()
+    }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
         return true
